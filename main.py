@@ -6,7 +6,6 @@ bot = telebot.TeleBot('1833045242:AAEZcG7f1HDnz-sU_AFYbPNDeRNO5GcrW1Q')
 ev = random.randint(1, 2)
 event = 'Надвигающаяся гроза'
 
-commands_state = {}
 in_game_ids = []
 mass_id_inroom = {1: [],
                   2: []}
@@ -17,16 +16,20 @@ locations = ['город', 'горы']
 def send_welcome(message):
     con = sql.connect('data.db')
     cur = con.cursor()
-    global ev
-    ev = 1
     cur.execute(f'select arc_1, title from events where id = {ev}')
     res = cur.fetchall()
     arc_1 = res[0][0]
     title = res[0][1]
     bot.send_message(message.chat.id,
                      f'Привет! Я бот для рп-игр. Сейчас идёт ивент "{title}". \n"{arc_1}". \nНапиши /new_character чтобы создать анкету.')
-    cur.execute(f'INSERT INTO users (id) VALUES ({message.from_user.id});')
-    commands_state[message.from_user.id] = 'default'
+    cur.execute(f'select id from users')
+    meh = cur.fetchall()
+    sp = list(map(lambda x: str(x[0]), meh))
+    print(sp, message.from_user.id)
+    if str(message.from_user.id) not in sp:
+        cur.execute(f'INSERT INTO users (id) VALUES ({message.from_user.id});')
+    cur.execute(f'update users set state = \'default\' where id = {message.from_user.id}')
+    con.commit()
 
 
 @bot.message_handler(commands=['help'])
@@ -63,7 +66,14 @@ def location_select(message):
 
 @bot.message_handler(content_types=['text'])
 def default_text(message):
-    if commands_state == 'move_to_another_location':
+    con = sql.connect('data.db')
+    cur = con.cursor()
+    cur.execute(f'select state from users where id = {message.from_user.id}')
+    res = cur.fetchall()
+    state = res[0][0]
+    if state == 'default':
+        bot.send_message(message.from_user.id, 'FUCK U')
+    elif state == 'move_to_another_location':
         if message.text in [1, 2]:
             mass_id_inroom[message.text].append(message.from_user.id)
             bot.send_message(message.from_user.id,
