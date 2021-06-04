@@ -21,7 +21,7 @@ def send_welcome(message):
     arc_1 = res[0][0]
     title = res[0][1]
     bot.send_message(message.chat.id,
-                     f'Привет! Я бот для рп-игр. Сейчас идёт ивент "{title}". \n"{arc_1}". \nНапиши /new_character чтобы создать анкету.')
+                     f'Привет! Я бот для рп-игр. Сейчас идёт ивент "{title}". \n"{arc_1}". \nНапиши /new_character чтобы создать анкету.\nНапиши /help для доп информации')
     cur.execute(f'select id from users')
     meh = cur.fetchall()
     sp = list(map(lambda x: str(x[0]), meh))
@@ -37,7 +37,7 @@ def help_message(message):
         bot.send_message(message.chat.id,
                          'Чтобы войти в игру напиши /new_character, после чего ты создашь персонажа для евента, а затем войдешь в игру.\n'
                          'Чтобы узнать, что это за бот, напиши /start\n'
-                         'Чтобы узнать портфолио игрока /check_infо')
+                         'Чтобы узнать портфолио игрока /check_info')
         # 'Чтобы узнать подробнее про идущий евент, напиши /event_info'
     else:
         bot.send_message(message.chat.id, 'Чтобы узнать, что это за бот, напиши /start')
@@ -112,6 +112,8 @@ def default_text(message):
                 cur.execute(f'select name, sex, class, race, background, mind, location from users where id = {i[0]}')
                 ans = ', '.join(cur.fetchall()[0])
                 bot.send_message(message.from_user.id, ans)
+        cur.execute(f'update users set state = \'default\' where id = {message.from_user.id}')
+        con.commit()
     # elif state == 'move_to_another_location':
     #     if message.text in [1, 2]:
     #         mass_id_inroom[message.text].append(message.from_user.id)
