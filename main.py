@@ -36,7 +36,8 @@ def help_message(message):
     if in_game_ids.count(message.from_user.id) < 1:
         bot.send_message(message.chat.id,
                          'Чтобы войти в игру напиши /new_character, после чего ты создашь персонажа для евента, а затем войдешь в игру.\n'
-                         'Чтобы узнать, что это за бот, напиши /start')
+                         'Чтобы узнать, что это за бот, напиши /start\n'
+                         'Чтобы узнать портфолио игрока /check_infо')
         # 'Чтобы узнать подробнее про идущий евент, напиши /event_info'
     else:
         bot.send_message(message.chat.id, 'Чтобы узнать, что это за бот, напиши /start')
