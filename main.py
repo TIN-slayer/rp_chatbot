@@ -52,7 +52,7 @@ def create_character(message):
         bot.send_message(message.chat.id,
                          'Введите свой никнэйм, пол вашего персонажа, его класс, рассу, характер, и описание вашего персонажа (для примера историю, подробности, и т. д.)\n'
                          'Укажите это в виде:\n'
-                         'никнэйм|пол|класс|расса|характер|описание\n'
+                         'никнэйм|пол|класс|расса|предыстория|характер\n'
                          '!!!НЕ ИСПОЛЬЗУЙТЕ СИМВОЛ "|" ВНУТРИ ТЕКСТА!!!\n'
                          f'Доступные рассы: {respon[0][0]}\n'
                          f'Доступные классы: {respon[0][1]}')
@@ -79,10 +79,12 @@ def default_text(message):
     if state == 'default':
         bot.send_message(message.from_user.id, 'FUCK U')
     elif state == 'getting_info':
-        sp = '\', \''.join(message.text.split('|'))
+        sp = message.text.split('|')
         print(f'update users set state = \'{sp}\' where id = {message.from_user.id}')
-        cur.execute(f'update users set state = \'{sp}\' where id = {message.from_user.id}')
+        cur.execute(f'update users set name = \'{sp[0]}\', sex = \'{sp[1]}\', class = \'{sp[2]}\', race = \'{sp[3]}\', background = \'{sp[4]}\', mind = \'{sp[5]}\', lockation = \'Ферма\' where id = {message.from_user.id}')
+        con.commit()
         cur.execute(f'update users set state = \'default\' where id = {message.from_user.id}')
+        con.commit()
     elif state == 'move_to_another_location':
         if message.text in [1, 2]:
             mass_id_inroom[message.text].append(message.from_user.id)
