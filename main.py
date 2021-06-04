@@ -4,7 +4,6 @@ import sqlite3 as sql
 
 bot = telebot.TeleBot('1833045242:AAEZcG7f1HDnz-sU_AFYbPNDeRNO5GcrW1Q')
 ev = random.randint(1, 2)
-event = 'Надвигающаяся гроза'
 
 in_game_ids = []
 mass_id_inroom = {1: [],
@@ -25,7 +24,6 @@ def send_welcome(message):
     cur.execute(f'select id from users')
     meh = cur.fetchall()
     sp = list(map(lambda x: str(x[0]), meh))
-    print(sp, message.from_user.id)
     if str(message.from_user.id) not in sp:
         cur.execute(f'INSERT INTO users (id) VALUES ({message.from_user.id});')
     cur.execute(f'update users set state = \'default\' where id = {message.from_user.id}')
@@ -47,12 +45,19 @@ def help_message(message):
 @bot.message_handler(commands=['new_character'])
 def create_character(message):
     if in_game_ids.count(message.from_user.id) < 1:
+        con = sql.connect('data.db')
+        cur = con.cursor()
+        cur.execute(f'select races, classes from events where id = {ev}')
+        respon = cur.fetchall()
         bot.send_message(message.chat.id,
                          'Введите свой никнэйм, пол вашего персонажа, его класс, рассу, характер, и описание вашего персонажа (для примера историю, подробности, и т. д.)\n'
                          'Укажите это в виде:\n'
                          'никнэйм|пол|класс|расса|характер|описание\n'
-                         '!!!НЕ ИСПОЛЬЗУЙТЕ СИМВОЛ "|" ВНУТРИ ТЕКСТА!!!')
-        commands_state[message.from_user.id] = 'getting_info'
+                         '!!!НЕ ИСПОЛЬЗУЙТЕ СИМВОЛ "|" ВНУТРИ ТЕКСТА!!!\n'
+                         f'Доступные рассы: {respon[0][0]}\n'
+                         f'Доступные классы: {respon[0][1]}')
+        cur.execute(f'update users set state = \'getting_info\' where id = {message.from_user.id}')
+        con.commit()
 
 
 @bot.message_handler(commands=['location'])
@@ -73,6 +78,11 @@ def default_text(message):
     state = res[0][0]
     if state == 'default':
         bot.send_message(message.from_user.id, 'FUCK U')
+    elif state == 'getting_info':
+        sp = '\', \''.join(message.text.split('|'))
+        print(f'update users set state = \'{sp}\' where id = {message.from_user.id}')
+        cur.execute(f'update users set state = \'{sp}\' where id = {message.from_user.id}')
+        cur.execute(f'update users set state = \'default\' where id = {message.from_user.id}')
     elif state == 'move_to_another_location':
         if message.text in [1, 2]:
             mass_id_inroom[message.text].append(message.from_user.id)
