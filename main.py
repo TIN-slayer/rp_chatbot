@@ -10,7 +10,7 @@ in_game_ids = []
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.send_message(message.chat.id, f'Привет! Я бот для рп-игр. Сейчас идёт ивент Name. Сейчас происходит: "{event}". Напиши /new_character чтобы создать анкету.')
+    bot.send_message(message.chat.id, f'Привет! Я бот для рп-игр. Сейчас идёт ивент "{event}". Сейчас происходит: "{event}". Напиши /new_character чтобы создать анкету.')
 
 @bot.message_handler(commands=['help'])
 def help_message(message):
@@ -22,8 +22,9 @@ def help_message(message):
         bot.send_message(message.chat.id, 'Чтобы узнать, что это за бот, напиши /start\n'
                          'Чтобы узнать подробнее про идущий евент, напиши /event_info')
 
-@bot.message_handler(commands=['help'])
-def send_welcome(message):
-    bot.send_message(message.chat.id, f'Привет! Я бот для рп-игр. Сейчас идёт ивент Name. Сейчас происходит: "{event}". Напиши /new_character чтобы создать анкету.')
-    
+@bot.message_handler(commands=['/new_character'])
+def create_character(message):
+    if in_game_ids.count(message.from_user.id) < 1:
+        bot.send_message(message.chat.id, f'Привет! Я бот для рп-игр. Сейчас идёт ивент "{event}". Сейчас происходит: "{event}". Напиши /new_character чтобы создать анкету.')
+
 bot.polling(none_stop=True)
