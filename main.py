@@ -84,8 +84,13 @@ def default_text(message):
     global qtty
     con = sql.connect('data.db')
     cur = con.cursor()
+    cur.execute(f'select id from users')
+    meh = cur.fetchall()
+    sp = list(map(lambda x: str(x[0]), meh))
+    if str(message.from_user.id) not in sp:
+        return
     cur.execute(f'select state from users where id = {message.from_user.id}')
-    res = cur.fetchall()
+    res = cur.fetchall()ч
     state = res[0][0]
     if state == 'default':
         qtty += 1
