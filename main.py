@@ -25,6 +25,6 @@ def help_message(message):
 @bot.message_handler(commands=['/new_character'])
 def create_character(message):
     if in_game_ids.count(message.from_user.id) < 1:
-        bot.send_message(message.chat.id, f'Привет! Я бот для рп-игр. Сейчас идёт ивент "{event}". Сейчас происходит: "{event}". Напиши /new_character чтобы создать анкету.')
+        bot.send_message(message.chat.id, 'Введите свой никнэйм:')
 
 bot.polling(none_stop=True)
