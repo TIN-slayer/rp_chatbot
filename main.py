@@ -77,11 +77,16 @@ def default_text(message):
     res = cur.fetchall()
     state = res[0][0]
     if state == 'default':
-        bot.send_message(message.from_user.id, 'FUCK U')
+        cur.execute(f'select id from users')
+        sent = cur.fetchall()
+        for i in sent:
+            if int(i[0]) != message.from_user.id:
+                bot.send_message(int(i[0]), message.text)
     elif state == 'getting_info':
         sp = message.text.split('|')
         print(f'update users set state = \'{sp}\' where id = {message.from_user.id}')
-        cur.execute(f'update users set name = \'{sp[0]}\', sex = \'{sp[1]}\', class = \'{sp[2]}\', race = \'{sp[3]}\', background = \'{sp[4]}\', mind = \'{sp[5]}\', lockation = \'Ферма\' where id = {message.from_user.id}')
+        cur.execute(
+            f'update users set name = \'{sp[0]}\', sex = \'{sp[1]}\', class = \'{sp[2]}\', race = \'{sp[3]}\', background = \'{sp[4]}\', mind = \'{sp[5]}\', location = \'Ферма\' where id = {message.from_user.id}')
         con.commit()
         cur.execute(f'update users set state = \'default\' where id = {message.from_user.id}')
         con.commit()
