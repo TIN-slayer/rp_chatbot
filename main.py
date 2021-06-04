@@ -7,6 +7,7 @@ bot = telebot.TeleBot('1833045242:AAEZcG7f1HDnz-sU_AFYbPNDeRNO5GcrW1Q')
 event = 'Надвигающаяся гроза'
 
 in_game_ids = []
+mass_id_inroom = []
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -26,5 +27,17 @@ def help_message(message):
 def create_character(message):
     if in_game_ids.count(message.from_user.id) < 1:
         bot.send_message(message.chat.id, 'Введите свой никнэйм:')
+
+
+
+@bot.message_handler(commands=['/location'])
+def location_select(message):
+    bot.send_message(message.from_user.id, 'Выберите локацию, к которой хотите присоединиться:')
+    bot.send_message(message.from_user.id, ' 1. Город.')
+    if message.text == '1':
+	mass_id_inroom.append(message.from_user.id)
+	print('Вы теперь находитесь в городе.')
+    else:
+	print('Вы решили куда-то пойти, но забыли. Может, стоит вам ещё раз подумать куда вы хотите пойти?')
 
 bot.polling(none_stop=True)
