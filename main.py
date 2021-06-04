@@ -62,13 +62,13 @@ def create_character(message):
         con.commit()
 
 
-# @bot.message_handler(commands=['check_info'])
-# def check(message):
-#     con = sql.connect('data.db')
-#     cur = con.cursor()
-#     bot.send_message(message.from_user.id, 'Выберите чела для проверки его инфы')
-#     cur.execute(f'update users set state = \'check_info\' where id = {message.from_user.id}')
-#     con.commit()
+@bot.message_handler(commands=['check_info'])
+def check(message):
+    con = sql.connect('data.db')
+    cur = con.cursor()
+    bot.send_message(message.from_user.id, 'Выберите чела для проверки его инфы')
+    cur.execute(f'update users set state = \'check_info\' where id = {message.from_user.id}')
+    con.commit()
 #
 # @bot.message_handler(commands=['location'])
 # def location_select(message):
@@ -103,8 +103,14 @@ def default_text(message):
         con.commit()
         cur.execute(f'update users set state = \'default\' where id = {message.from_user.id}')
         con.commit()
-    # elif state == 'check_info':
-    #     pass
+    elif state == 'check_info':
+        cur.execute(f'select id, name from users')
+        sent = cur.fetchall()
+        for i in sent:
+            if i[1] == message.text:
+                cur.execute(f'select name, sex, class, race, background, mind, location from users where id = {i[0]}')
+                ans = ', '.join(cur.fetchall()[0])
+                bot.send_message(message.from_user.id, ans)
     # elif state == 'move_to_another_location':
     #     if message.text in [1, 2]:
     #         mass_id_inroom[message.text].append(message.from_user.id)
